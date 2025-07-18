@@ -1,0 +1,54 @@
+{
+  "name": "@ramesesinc/client",
+  "version": "1.0.3",
+  "description": "Reusable UI components, layouts, and utilities for Rameses projects",
+  "author": "Rameses Systems Inc.",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./index.css": "./dist/index.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "style": "dist/index.css",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "clean": "rm -rf dist",
+    "dev": "tsup src/index.ts --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "axios": "^1.0.0",
+    "react": ">=17",
+    "react-dom": ">=17",
+    "tailwindcss": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.4.0",
+    "axios": "^1.6.0",
+    "postcss": "^8.4.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.4.0",
+    "tsup": "^7.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "ramesesinc-ui",
+    "ramesesinc-client",
+    "ramesesinc-components"
+  ]
+}
