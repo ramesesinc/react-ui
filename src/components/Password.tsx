@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { EyeIcon, EyeOffIcon } from './icons';
-import { BindingModel, UIInputControl } from '@rameses/client';
+import { UIInputControl } from '@rameses/ui';
 
 interface PasswordProps extends UIInputControl {}
 

@@ -1,5 +1,5 @@
 import React, { ReactNode, useState } from "react";
-import { UIButtonControl } from '@rameses/client';
+import { UIButtonControl } from '@rameses/ui';
 
 type ButtonType = "button" | "submit"
 
@@ -18,19 +18,22 @@ export default function Button( props: ButtonProps ) {
       type = "button",
       className = "",
       disabled = false,
-      onClick = () => {},
+      onClick = (event: React.MouseEvent<HTMLButtonElement>) => {},
       children
 
    } = props;
 
    const [loading, setLoading] = useState(false);
 
-   const handleClick = async () => {
+   const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
       if (loading || disabled) return;
 
       try {
          setLoading(true);
-         await onClick?.();
+         const resp: any = onClick?.(event);
+         if ( resp && resp instanceof Promise ) {
+            await resp; 
+         }
       } 
       finally {
          setLoading(false);

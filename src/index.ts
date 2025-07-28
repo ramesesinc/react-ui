@@ -1,4 +1,5 @@
 import './index.css';
+import './utils';
 
 export * from './common/binding';
 export * from './common/tooltip';

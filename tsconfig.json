@@ -16,7 +16,8 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@rameses/client": ["src"]
+      "@rameses/ui": ["src"],
+      "@rameses/ui/*": ["src/*"]
     }
   },
   "include": ["src"],

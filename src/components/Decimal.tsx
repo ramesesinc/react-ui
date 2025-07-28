@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { BindingModel, UIInputControl } from '@rameses/client';
+import { BindingModel, UIInputControl } from '@rameses/ui';
 
 interface DecimalProps extends UIInputControl {
    name: string;

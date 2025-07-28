@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BindingModel, UIControl } from '@rameses/client';
+import { UIControl } from '@rameses/ui';
 
 import axios from 'axios';
 import errorUtil from '../common/ErrorUtil';

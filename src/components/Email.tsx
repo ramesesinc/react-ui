@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { UIInputControl } from '@rameses/client';
+import { UIInputControl } from '@rameses/ui';
 
 interface EmailProps extends UIInputControl {
     name: string;

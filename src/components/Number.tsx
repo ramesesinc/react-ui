@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { UIInputControl } from '@rameses/client';
+import { UIInputControl } from '@rameses/ui';
 
 interface NumberProps extends UIInputControl {
    min?: number;
