@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { EyeIcon, EyeOffIcon } from './icons';
 import { UIInputControl } from '@rameses/ui';
 
-interface PasswordProps extends UIInputControl {}
+interface PasswordProps extends UIInputControl { }
 
 const Password: React.FC<PasswordProps> = ({
   binding,
@@ -16,8 +16,8 @@ const Password: React.FC<PasswordProps> = ({
   placeholder,
   ...rest
 }) => {
-  const initialValue = binding.get( name );
-  const [inputValue, setInputValue] = useState( initialValue ?? '' );
+  const initialValue = binding.get(name);
+  const [inputValue, setInputValue] = useState(initialValue ?? '');
 
   const [focused, setFocused] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -26,13 +26,13 @@ const Password: React.FC<PasswordProps> = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if ( inputRef.current ) {
-        inputRef.current.setCustomValidity(''); 
+    if (inputRef.current) {
+      inputRef.current.setCustomValidity('');
     }
 
-    const newValue = ( e.target.value ?? '' ); 
-    setInputValue( newValue ); 
-    binding.set(name, newValue === '' ? null : newValue, dynamic );
+    const newValue = (e.target.value ?? '');
+    setInputValue(newValue);
+    binding.set(name, newValue === '' ? null : newValue, dynamic);
   };
 
   const handleBlur = () => {
@@ -64,14 +64,28 @@ const Password: React.FC<PasswordProps> = ({
   };
 
   useEffect(() => {
-    if ( focused ) return;
+    if (focused) return;
 
-    const str = binding.get( name ) ?? '';
-    setInputValue( str ); 
+    const str = binding.get(name) ?? '';
+    setInputValue(str);
 
   }, [binding.raw, focused]);
 
-  
+  useEffect(() => {
+    const validateHandler = () => {
+      const el = inputRef.current;
+      const newValue = (el?.value ?? '');
+      if (required && newValue === '') {
+        binding.showTooltip(el, 'Please fill out this field');
+        return `${label} field is required`;
+      }
+      return null;
+    };
+
+    binding.addValidationHandler(validateHandler);
+    return () => binding.removeValidationHandler(validateHandler);
+  }, []);
+
   const alignClass = {
     left: 'text-left',
     center: 'text-center',
@@ -83,7 +97,7 @@ const Password: React.FC<PasswordProps> = ({
   const focusStyleClass = `focus:outline-none ${inReadMode ? 'bg-gray-50' : 'focus:bg-yellow-50'} focus:ring-1 focus:ring-blue-400`;
 
   let shouldShowPass = (focused && inputValue && inputValue !== '');
-  if ( inReadMode ) shouldShowPass = false; 
+  if (inReadMode) shouldShowPass = false;
 
   return (
     <div className="flex flex-col gap-1 mb-4">
@@ -107,6 +121,7 @@ const Password: React.FC<PasswordProps> = ({
           onFocus={handleFocus}
           required={required}
           placeholder={shouldShowPass ? '' : placeholder}
+          autoComplete="new-password"
           disabled={inReadMode}
           className={`
             ${defaultStyleClass} 
@@ -117,7 +132,7 @@ const Password: React.FC<PasswordProps> = ({
           `}
         />
 
-        { !inReadMode && (
+        {!inReadMode && (
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}

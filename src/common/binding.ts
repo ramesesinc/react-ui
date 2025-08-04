@@ -14,6 +14,10 @@ export type EntityState = {
 
 export interface BindingModel {
   raw: EntityState;
+
+  error: string | null;
+  setError: ( error: string | null ) => void;
+
   get: (path: string) => any;
   set: (path: string, value: any, dynamic?: boolean) => void;
   
@@ -68,6 +72,7 @@ const tooltip = useTooltip();
 export function useBinding( data: EntityData = {}, mode: EntityMode = 'create' ) {
 
   const [raw, setRaw] = useState<EntityState>({ data, mode });
+  const [error, setError] = useState<string | null>(null); 
 
   const validationHandlers = useRef<Set<ValidationHandler>>(new Set());
 
@@ -96,13 +101,15 @@ export function useBinding( data: EntityData = {}, mode: EntityMode = 'create' )
   const validate = (): string | null => {
     for (const handler of validationHandlers.current) {
       const result = exec( handler );
-      if (( result ?? '') === '') {
+      if ( result == null || result === '') {
         // no error message 
       } else {
         // handle the error message
-        return result!.toString();
+        setError( result.toString()); 
+        return result.toString();
       }
     }
+    setError( null ); 
     return null; 
   };
 
@@ -130,6 +137,8 @@ export function useBinding( data: EntityData = {}, mode: EntityMode = 'create' )
   const binding: BindingModel = {
     raw, get, set,
     
+    error, setError, 
+
     getMode: () => raw.mode, 
 
     setMode: (mode: EntityMode) => { 

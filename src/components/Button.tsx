@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { UIButtonControl } from '@rameses/ui';
+import { getError } from "../common/ErrorUtil";
 
 type ButtonType = "button" | "submit"
 
@@ -13,11 +14,10 @@ export default function Button( props: ButtonProps ) {
 
    const {
       binding,
-      dynamic,
-      name,
       type = "button",
       className = "",
       disabled = false,
+      immediate = false,
       onClick = (event: React.MouseEvent<HTMLButtonElement>) => {},
       children
 
@@ -30,9 +30,23 @@ export default function Button( props: ButtonProps ) {
 
       try {
          setLoading(true);
-         const resp: any = onClick?.(event);
-         if ( resp && resp instanceof Promise ) {
-            await resp; 
+
+         if ( !immediate ) {
+            const validationResult = binding.validate(); 
+            if ( validationResult != null && validationResult !== '' ) { 
+               return;
+            } 
+         }
+
+         try {
+            const resp: any = onClick?.(event);
+            if ( resp && resp instanceof Promise ) {
+               await resp; 
+            } 
+         } 
+         catch(err) {
+            const e = getError(err);
+            binding.setError( e.message ); 
          }
       } 
       finally {
@@ -42,13 +56,12 @@ export default function Button( props: ButtonProps ) {
 
    return (
       <button
-         name={name}
          type={type}
          onClick={handleClick}
          disabled={disabled || loading}
 
          className={`inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors
-        bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-75 disabled:cursor-not-allowed ${className}`.trim()}
+        bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-75 disabled:cursor-not-allowed ${className ?? ''}`.trim()}
       >
          {loading && (
             <svg

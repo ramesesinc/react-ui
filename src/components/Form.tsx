@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UIControl } from '@rameses/ui';
+import { UIControl, ErrorPanel } from '@rameses/ui';
 
 import axios from 'axios';
 import errorUtil from '../common/ErrorUtil';
@@ -24,27 +24,22 @@ const Form: React.FC<FormProps> = ({
    children,
    ...rest
 }) => {
-   const [error, setError] = useState<string | null>(null); 
 
    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       console.log('Submitted Data: ', binding.getData());
       
       e.preventDefault();
 
-      let result = binding.validate();
-      if ((result ?? '') === '') {
-         setError( null ); 
-      }
-      else {
-         setError( result!.toString()); 
-         return; 
+      let validationResult = binding.validate();
+      if (validationResult != null && validationResult !== '' ) {
+         return;
       }
 
       try { 
          beforeSubmit?.(); 
       } 
       catch(err) {
-         setError( String(err)); 
+         binding.setError( String(err)); 
          return; 
       }
 
@@ -54,18 +49,16 @@ const Form: React.FC<FormProps> = ({
          try { 
             const res = await action( binding.getData()); 
             if ( res?.error?.message ) {
-               setError( String( res.error.message )); 
-               return; 
+               throw Error( String( res.error.message )); 
             }
             else if ( res?.error ) {
-               setError( String( res.error )); 
-               return; 
+               throw Error( String( res.error )); 
             }
 
             actionResult = res; 
          } 
          catch(err) {
-            setError( String(err)); 
+            binding.setError( String(err)); 
             return; 
          }
       }
@@ -77,7 +70,7 @@ const Form: React.FC<FormProps> = ({
          } 
          catch (err: any) {
             const e: any = errorUtil.getError( err ); 
-            setError( String(e.message)); 
+            binding.setError( String(e.message)); 
             return; 
          } 
       }
@@ -86,18 +79,14 @@ const Form: React.FC<FormProps> = ({
          afterSubmit?.( actionResult ); 
       } 
       catch(err) {
-         setError( String(err)); 
+         binding.setError( String(err)); 
          return; 
       }
    };
 
    return (
       <form {...rest} onSubmit={handleSubmit}>
-         {error && (
-            <label className="block w-full bg-red-100 text-red-700 ring-1 ring-red-300 rounded px-4 py-4 mb-4 text-sm font-medium">
-               {error}
-            </label>
-         )}
+         <ErrorPanel binding={binding} />
          {children}
       </form>
    );

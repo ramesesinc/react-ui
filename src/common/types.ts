@@ -5,7 +5,6 @@ import { BindingModel } from "./binding";
 export interface UIControl {
   binding: BindingModel;
   dynamic?: boolean;
-  name?: string;
   className?: string;
 }
 
@@ -15,6 +14,7 @@ export type TextHAlign = 'left' | 'center' | 'right';
 export interface UIInputControl extends UIControl {
   name: string;
   label?: string;
+  labelClassName?: string;
 
   required?: boolean;
   disabled?: boolean;
@@ -26,5 +26,7 @@ export interface UIInputControl extends UIControl {
 }
 
 export interface UIButtonControl extends UIControl {
+  dynamic?: never;
+  immediate?: boolean;
   onClick?: () => Promise<any> | void;
 }

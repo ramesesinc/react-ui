@@ -5,6 +5,8 @@ export * from './common/binding';
 export * from './common/tooltip';
 export * from './common/types';
 
+export { default as ErrorPanel } from './components/ErrorPanel';
+
 export { default as Text } from './components/Text';
 export { default as Number } from './components/Number';
 export { default as Decimal } from './components/Decimal';
