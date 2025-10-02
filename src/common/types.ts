@@ -8,8 +8,8 @@ export interface UIControl {
   className?: string;
 }
 
-export type TextCase = 'upper' | 'lower' | 'capitalize' | 'none';
-export type TextHAlign = 'left' | 'center' | 'right';
+export type TextCase = "upper" | "lower" | "capitalize" | "none";
+export type TextHAlign = "left" | "center" | "right";
 
 export interface UIInputControl extends UIControl {
   name: string;
@@ -19,7 +19,7 @@ export interface UIInputControl extends UIControl {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  
+
   align?: TextHAlign;
   textcase?: TextCase;
   placeholder?: string;

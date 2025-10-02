@@ -47,5 +47,9 @@
     "ramesesinc-ui",
     "ramesesinc-client",
     "ramesesinc-components"
-  ]
+  ],
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0"
+  }
 }
