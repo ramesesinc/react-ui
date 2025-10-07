@@ -29,7 +29,9 @@
     "axios": ">=1",
     "react": ">=17",
     "react-dom": ">=17",
-    "tailwindcss": ">=3"
+    "tailwindcss": ">=3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
@@ -48,8 +50,5 @@
     "ramesesinc-client",
     "ramesesinc-components"
   ],
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.544.0"
-  }
+  "dependencies": {}
 }
