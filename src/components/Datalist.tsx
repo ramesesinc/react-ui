@@ -13,9 +13,10 @@ import {
   Trash,
 } from "lucide-react";
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import Tooltip from "./Tooltip";
 
 type Column = {
-  name: string;
+  id: string;
   title: string;
   type?: string;
   sortable?: boolean;
@@ -208,14 +209,11 @@ const DataList = forwardRef<DataListRef, DataListProps>(
           <div>{addToolbar}</div>
           <div className="flex items-center gap-3 relative">
             {sortedToolbarActions.map((action) => (
-              <div key={action.name} className="relative group">
+              <Tooltip key={action.name} content={action.name} position="top">
                 <button type="button" className="p-1 rounded hover:bg-gray-100" onClick={() => action.onClick?.({})}>
                   {React.isValidElement(action.icon) ? React.cloneElement(action.icon, { size: 16 }) : action.icon}
                 </button>
-                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-black text-white rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                  {action.name}
-                </span>
-              </div>
+              </Tooltip>
             ))}
 
             <button className="flex items-center gap-2 rounded-full px-4 py-2 bg-blue-600 text-white hover:bg-blue-700">
@@ -223,14 +221,11 @@ const DataList = forwardRef<DataListRef, DataListProps>(
               Filter
             </button>
 
-            <div className="relative group">
+            <Tooltip content="Refresh" position="top">
               <button className="p-1 rounded hover:bg-gray-100" onClick={() => doSearch({ _start: start })}>
                 <RefreshCcw size={16} />
               </button>
-              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-black text-white rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                Refresh
-              </span>
-            </div>
+            </Tooltip>
 
             {/* Search */}
             {allowSearch && (
@@ -269,7 +264,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
               <tr>
                 {columns.map((col) => (
                   <th
-                    key={col.name}
+                    key={col.id}
                     style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
                     className="px-4 py-3 text-left font-semibold text-sm align-middle"
                   >
@@ -285,7 +280,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                 Array.from({ length: limit }).map((_, idx) => (
                   <tr key={idx} className="h-12 even:bg-gray-50 odd:bg-white">
                     {columns.map((c) => (
-                      <td key={c.name} className="px-4 py-3 align-middle">
+                      <td key={c.id} className="px-4 py-3 align-middle">
                         <div className="h-4 bg-gray-200 rounded animate-pulse" />
                       </td>
                     ))}
@@ -319,33 +314,32 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                         style={{ cursor: openItem ? "pointer" : undefined }}
                       >
                         {columns.map((col) => (
-                          <td key={col.name} className="px-4 py-3 align-middle">
+                          <td key={col.id} className="px-4 py-3 align-middle">
                             {col.render
                               ? col.render(item)
-                              : getNestedValue(item, col.name) ?? <span className="text-gray-400">-</span>}
+                              : getNestedValue(item, col.id) ?? <span className="text-gray-400">-</span>}
                           </td>
                         ))}
                         {showActions && (
-                          <td className="px-4 py-3 align-middle flex gap-1 justify-center whitespace-nowrap">
-                            {allRowActions.map((action) => (
-                              <div key={action.name} className="relative group">
-                                <button
-                                  type="button"
-                                  className="p-1 rounded hover:bg-gray-100"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    action.onClick?.(item);
-                                  }}
-                                >
-                                  {React.isValidElement(action.icon)
-                                    ? React.cloneElement(action.icon, { size: 16 })
-                                    : action.icon}
-                                </button>
-                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-black text-white rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                  {action.name}
-                                </span>
-                              </div>
-                            ))}
+                          <td className="px-4 py-3 align-middle whitespace-nowrap">
+                            <div className="flex gap-1 justify-center">
+                              {allRowActions.map((action) => (
+                                <Tooltip key={action.name} content={action.name} position="top" color="dark">
+                                  <button
+                                    type="button"
+                                    className="p-1 rounded hover:bg-[#f0f0f0]"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      action.onClick?.(item);
+                                    }}
+                                  >
+                                    {React.isValidElement(action.icon)
+                                      ? React.cloneElement(action.icon, { size: 16 })
+                                      : action.icon}
+                                  </button>
+                                </Tooltip>
+                              ))}
+                            </div>
                           </td>
                         )}
                         {dropdown && (
