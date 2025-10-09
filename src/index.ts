@@ -20,4 +20,9 @@ export { default as Button } from "./components/Button";
 // New Components Added
 export { default as Datalist } from "./components/Datalist";
 export type { Column, DataListHandler, DataListProps, DataListRef, ExtraAction } from "./components/Datalist";
+
 export { default as Select } from "./components/Select";
+
+export { default as Tooltip } from "./components/Tooltip";
+
+export { default as Modal } from "./components/Modal";

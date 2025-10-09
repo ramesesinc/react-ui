@@ -203,7 +203,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
     const hasNext = items.length > limit;
 
     return (
-      <div className="bg-gray-50 flex flex-col font-sans font-normal rounded-md relative">
+      <div className="flex flex-col font-sans font-sm rounded-md relative">
         {/* Toolbar */}
         <div className={`${hideToolbar ? "hidden" : "flex"} justify-between items-center gap-4 p-2.5`}>
           <div>{addToolbar}</div>
@@ -266,12 +266,12 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                   <th
                     key={col.id}
                     style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
-                    className="px-4 py-3 text-left font-semibold text-sm align-middle"
+                    className="px-4 py-3 text-left font-bold text-sm align-middle text-gray-400"
                   >
                     {col.title}
                   </th>
                 ))}
-                {showActions && <th className="px-4 py-3 text-center w-1">Actions</th>}
+                {showActions && <th className="px-4 py-3 text-center w-1"></th>}
                 {dropdown && <th className="px-4 py-3 w-1" />}
               </tr>
             </thead>
@@ -314,14 +314,14 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                         style={{ cursor: openItem ? "pointer" : undefined }}
                       >
                         {columns.map((col) => (
-                          <td key={col.id} className="px-4 py-3 align-middle">
+                          <td key={col.id} className="px-4 py-3 align-middle border-b">
                             {col.render
                               ? col.render(item)
                               : getNestedValue(item, col.id) ?? <span className="text-gray-400">-</span>}
                           </td>
                         ))}
                         {showActions && (
-                          <td className="px-4 py-3 align-middle whitespace-nowrap">
+                          <td className="px-4 py-3 align-middle whitespace-nowrap border-b">
                             <div className="flex gap-1 justify-center">
                               {allRowActions.map((action) => (
                                 <Tooltip key={action.name} content={action.name} position="top" color="dark">
@@ -373,7 +373,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
         </div>
 
         {/* Footer / Pagination */}
-        <div className="flex justify-end gap-2 p-2 bg-gray-50">
+        <div className="flex justify-end gap-2 p-2 bg-gray-50 ">
           <button
             type="button"
             className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
