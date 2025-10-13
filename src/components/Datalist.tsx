@@ -25,6 +25,7 @@ type Column = {
   valignment?: string;
   style?: Record<string, any>;
   render?: (item: Record<string, any>) => React.ReactNode;
+  primary?: boolean;
 };
 
 type ExtraAction = {
@@ -144,19 +145,53 @@ const DataList = forwardRef<DataListRef, DataListProps>(
       if (!fetcher) return;
       setLoading(true);
       try {
+        let pkcol: Column | null = null;
+
+        cols!.filter((c: Column) => {
+          if (pkcol == null && Boolean(c.primary)) {
+            pkcol = c;
+          }
+        });
+
+        if (pkcol == null) {
+          throw new Error("Specify a primary column");
+        }
+
+        const projection: Record<string, any> = {};
+
+        cols!.forEach((c: Column) => {
+          projection[c.id] = 1;
+        });
+
+        const uFilter = {
+          ...(params.filters ?? appliedFilters ?? {}),
+          // add additional filter here
+        };
+
         const query = {
           start: params._start ?? start,
           limit,
           searchtext: searchText,
-          cols: columns ?? null,
-          hiddencols: hiddencols ?? null,
-          sortcol: sortcol ?? params.sortcol ?? null,
+          // cols: columns ?? null,
+          // hiddencols: hiddencols ?? null,
+          // sortcol: sortcol ?? params.sortcol ?? null,
           orderby: orderby ?? null,
-          filters: params.filters ?? appliedFilters,
+          filter: uFilter,
           searchfields: searchFields ?? undefined,
+          projection,
         };
+        // console.log({ query });
         const results = await fetcher(query);
-        setItems(results ?? []);
+
+        let resolveItems = [];
+
+        if (typeof results === "object" && results != null) {
+          resolveItems = (results as Record<string, any>).data;
+        } else if (Array.isArray(results)) {
+          resolveItems = results;
+        }
+
+        setItems(resolveItems ?? []);
       } finally {
         setLoading(false);
       }
@@ -304,7 +339,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                   </td>
                 </tr>
               ) : (
-                displayedItems.map((item, idx) => {
+                displayedItems.map((item: any, idx: any) => {
                   const isExpanded = expandedRowIndex === idx;
                   return (
                     <React.Fragment key={idx}>
