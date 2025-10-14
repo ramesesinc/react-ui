@@ -167,6 +167,10 @@ const DataList = forwardRef<DataListRef, DataListProps>(
           // throw new Error("Specify a primary column");
         }
 
+        // Filter visible columns
+
+        // console.log(visibleCols);
+
         // Projections
         const projection: Record<string, any> = {};
 
@@ -316,7 +320,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
         {/* Table */}
         <div className="flex-1 overflow-y-auto relative">
           <table className="w-full border-collapse table-auto">
-            {/* <thead className="sticky top-0 z-10 bg-white shadow-[0_1px_0_rgb(235,241,245)]">
+            <thead className="sticky top-0 z-10 bg-white shadow-[0_1px_0_rgb(235,241,245)]">
               <tr>
                 {columns.map((col) => (
                   <th
@@ -330,25 +334,8 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                 {showActions && <th className="px-4 py-3 text-center w-1"></th>}
                 {dropdown && <th className="px-4 py-3 w-1" />}
               </tr>
-            </thead> */}
-            <thead className="sticky top-0 z-10 bg-white shadow-[0_1px_0_rgb(235,241,245)]">
-              <tr>
-                {visibleCols.map((col) => (
-                  <th
-                    key={col.id}
-                    style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
-                    className="px-4 py-3 text-left font-bold text-sm align-middle text-gray-400"
-                  >
-                    {col.title}
-                  </th>
-                ))}
-
-                {/* Action / Dropdown columns remain visible */}
-                {showActions && <th className="px-4 py-3 text-center w-1"></th>}
-                {dropdown && <th className="px-4 py-3 w-1" />}
-              </tr>
             </thead>
-            {/* <tbody>
+            <tbody>
               {loading ? (
                 Array.from({ length: limit }).map((_, idx) => (
                   <tr key={idx} className="h-12 even:bg-gray-50 odd:bg-white">
@@ -430,106 +417,6 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                           </td>
                         )}
                       </tr>
-                      {dropdown && isExpanded && (
-                        <tr className="bg-gray-100">
-                          <td colSpan={columns.length + (showActions ? 1 : 0)} className="p-4">
-                            {dropdown(item)}
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })
-              )}
-            </tbody> */}
-            <tbody>
-              {loading ? (
-                Array.from({ length: limit }).map((_, idx) => (
-                  <tr key={idx} className="h-12 even:bg-gray-50 odd:bg-white">
-                    {visibleCols.map((c) => (
-                      <td key={c.id} className="px-4 py-3 align-middle">
-                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                      </td>
-                    ))}
-                    {showActions && (
-                      <td className="px-4 py-3 align-middle">
-                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                      </td>
-                    )}
-                    {dropdown && (
-                      <td className="px-4 py-3 align-middle">
-                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                      </td>
-                    )}
-                  </tr>
-                ))
-              ) : displayedItems.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={visibleCols.length + (showActions ? 1 : 0) + (dropdown ? 1 : 0)}
-                    className="text-center py-8"
-                  >
-                    <p className="font-semibold">{emptyState?.title ?? "No Data"}</p>
-                    <p>{emptyState?.message ?? "Try adjusting filters or search."}</p>
-                  </td>
-                </tr>
-              ) : (
-                displayedItems.map((item: any, idx: number) => {
-                  const isExpanded = expandedRowIndex === idx;
-                  return (
-                    <React.Fragment key={idx}>
-                      <tr
-                        className="h-12 even:bg-gray-50 odd:bg-white hover:bg-blue-100"
-                        onClick={() => openItem?.(item)}
-                        style={{ cursor: openItem ? "pointer" : undefined }}
-                      >
-                        {visibleCols.map((col) => (
-                          <td key={col.id} className="px-4 py-3 align-middle border-b">
-                            {col.render
-                              ? col.render(item)
-                              : getNestedValue(item, col.id) ?? <span className="text-gray-400">-</span>}
-                          </td>
-                        ))}
-
-                        {showActions && (
-                          <td className="px-4 py-3 align-middle whitespace-nowrap border-b">
-                            <div className="flex gap-1 justify-center">
-                              {allRowActions.map((action) => (
-                                <Tooltip key={action.name} content={action.name} position="top" color="dark">
-                                  <button
-                                    type="button"
-                                    className="p-1 rounded hover:bg-[#f0f0f0]"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      action.onClick?.(item);
-                                    }}
-                                  >
-                                    {React.isValidElement(action.icon)
-                                      ? React.cloneElement(action.icon, { size: 16 })
-                                      : action.icon}
-                                  </button>
-                                </Tooltip>
-                              ))}
-                            </div>
-                          </td>
-                        )}
-
-                        {dropdown && (
-                          <td className="px-4 py-3 align-middle">
-                            <button
-                              type="button"
-                              className="p-1 rounded hover:bg-gray-100"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setExpandedRowIndex(isExpanded ? null : idx);
-                              }}
-                            >
-                              {isExpanded ? <ChevronLeft size={16} /> : <ChevronDown size={16} />}
-                            </button>
-                          </td>
-                        )}
-                      </tr>
-
                       {dropdown && isExpanded && (
                         <tr className="bg-gray-100">
                           <td colSpan={columns.length + (showActions ? 1 : 0)} className="p-4">
