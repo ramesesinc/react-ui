@@ -328,7 +328,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                   <th
                     key={col.id}
                     style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
-                    className="px-4 py-3 text-left font-bold text-sm align-middle text-gray-400"
+                    className="px-4 py-3 text-left font-bold text-sm align-middle text-white bg-blue-400"
                   >
                     {col.title}
                   </th>

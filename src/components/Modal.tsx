@@ -43,7 +43,7 @@ const Modal = ({
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40" onClick={handleOverlayClick}>
       <div
         className={clsx(
-          "relative bg-white rounded-lg shadow-lg p-6 w-full max-w-[90vw] transition-all duration-300 ease-in-out",
+          "relative bg-white rounded-lg shadow-lg p-2 w-full max-w-[90vw] transition-all duration-300 ease-in-out",
           className
         )}
         style={{ width, height }}
@@ -58,13 +58,13 @@ const Modal = ({
         )}
 
         {/* Modal Content */}
-        <div className="overflow-auto max-h-[80vh]">{children}</div>
+        <div className="overflow-auto">{children}</div>
 
         {!hideCloseButton && (
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors"
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 transition-colors"
           >
             ✕
           </button>
