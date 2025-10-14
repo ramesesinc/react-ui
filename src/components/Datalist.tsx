@@ -328,19 +328,20 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                   <th
                     key={col.id}
                     style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
-                    className="px-4 py-3 text-left font-bold text-sm align-middle text-white bg-blue-400"
+                    className="px-4 py-3 text-left font-bold text-sm align-middle text-gray-700 bg-gray-100"
                   >
                     {col.title}
                   </th>
                 ))}
-                {showActions && <th className="px-4 py-3 text-center w-1"></th>}
+                {showActions && <th className="px-4 py-3 text-center w-1 text-gray-700 bg-gray-100"></th>}
                 {dropdown && <th className="px-4 py-3 w-1" />}
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 Array.from({ length: limit }).map((_, idx) => (
-                  <tr key={idx} className="h-12 even:bg-gray-50 odd:bg-white">
+                  // even:bg-gray-50 odd:bg-white
+                  <tr key={idx} className="h-12">
                     {/* {columns.map((c) => (
                       <td key={c.id} className="px-4 py-3 align-middle">
                         <div className="h-4 bg-gray-200 rounded animate-pulse" />
