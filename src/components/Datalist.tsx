@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ChevronDown,
   ChevronLeft,
@@ -26,7 +24,6 @@ type Column = {
   style?: Record<string, any>;
   render?: (item: Record<string, any>) => React.ReactNode;
   primary?: boolean;
-  visible?: boolean;
 };
 
 type ExtraAction = {
@@ -124,9 +121,8 @@ const DataList = forwardRef<DataListRef, DataListProps>(
     const [loading, setLoading] = useState(false);
     const [internalError, setInternalError] = useState<string | null>(null);
 
-    // ✅ Decide columns & fetcher based on priority
+    // âœ… Decide columns & fetcher based on priority
     const columns = listHandler ? listHandler.getColumns() : cols ?? [];
-    const visibleCols = cols?.filter((c: Column) => c.visible !== false) ?? [];
     const fetcher = listHandler ? listHandler.getList : handler;
 
     const defaultActions: ExtraAction[] = [
@@ -152,7 +148,6 @@ const DataList = forwardRef<DataListRef, DataListProps>(
 
       setLoading(true);
       setInternalError(null);
-
       try {
         let pkcol: Column | null = null;
 
@@ -163,15 +158,10 @@ const DataList = forwardRef<DataListRef, DataListProps>(
         });
 
         if (pkcol == null) {
-          setInternalError("Specify a primary column");
           // throw new Error("Specify a primary column");
+          setInternalError("Specify a primary column");
         }
 
-        // Filter visible columns
-
-        // console.log(visibleCols);
-
-        // Projections
         const projection: Record<string, any> = {};
 
         cols!.forEach((c: Column) => {
@@ -208,14 +198,14 @@ const DataList = forwardRef<DataListRef, DataListProps>(
 
         setItems(resolveItems ?? []);
       } catch (err: any) {
-        console.error("DataList Error:", err);
+        // console.error("DataList Error:", err);
         setInternalError(err?.message ?? "An unexpected error occurred.");
       } finally {
         setLoading(false);
       }
     };
 
-    // ✅ Expose full ref API
+    // âœ… Expose full ref API
     useImperativeHandle(ref, () => ({
       refresh: () => doSearch({ _start: start }),
       update: (newItems) => setItems(newItems),
@@ -263,7 +253,6 @@ const DataList = forwardRef<DataListRef, DataListProps>(
             <span className="ml-2 text-sm">{finalError}</span>
           </div>
         )}
-
         {/* Toolbar */}
         <div className={`${hideToolbar ? "hidden" : "flex"} justify-between items-center gap-4 p-2.5`}>
           <div>{addToolbar}</div>
