@@ -24,6 +24,7 @@ type Column = {
   style?: Record<string, any>;
   render?: (item: Record<string, any>) => React.ReactNode;
   primary?: boolean;
+  visible?: boolean;
 };
 
 type ExtraAction = {
@@ -123,6 +124,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
 
     // âœ… Decide columns & fetcher based on priority
     const columns = listHandler ? listHandler.getColumns() : cols ?? [];
+    const visibleCols = cols?.filter((c: Column) => c.visible !== false) ?? [];
     const fetcher = listHandler ? listHandler.getList : handler;
 
     const defaultActions: ExtraAction[] = [
@@ -190,10 +192,12 @@ const DataList = forwardRef<DataListRef, DataListProps>(
 
         let resolveItems = [];
 
-        if (typeof results === "object" && results != null) {
-          resolveItems = (results as Record<string, any>).data;
+        if (results == null) {
+          resolveItems = [];
         } else if (Array.isArray(results)) {
           resolveItems = results;
+        } else {
+          resolveItems = (results as Record<string, any>).data;
         }
 
         setItems(resolveItems ?? []);
@@ -311,7 +315,16 @@ const DataList = forwardRef<DataListRef, DataListProps>(
           <table className="w-full border-collapse table-auto">
             <thead className="sticky top-0 z-10 bg-white shadow-[0_1px_0_rgb(235,241,245)]">
               <tr>
-                {columns.map((col) => (
+                {/* {columns.map((col) => (
+                  <th
+                    key={col.id}
+                    style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
+                    className="px-4 py-3 text-left font-bold text-sm align-middle text-gray-400"
+                  >
+                    {col.title}
+                  </th>
+                ))} */}
+                {visibleCols.map((col) => (
                   <th
                     key={col.id}
                     style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
@@ -328,7 +341,12 @@ const DataList = forwardRef<DataListRef, DataListProps>(
               {loading ? (
                 Array.from({ length: limit }).map((_, idx) => (
                   <tr key={idx} className="h-12 even:bg-gray-50 odd:bg-white">
-                    {columns.map((c) => (
+                    {/* {columns.map((c) => (
+                      <td key={c.id} className="px-4 py-3 align-middle">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      </td>
+                    ))} */}
+                    {visibleCols.map((c) => (
                       <td key={c.id} className="px-4 py-3 align-middle">
                         <div className="h-4 bg-gray-200 rounded animate-pulse" />
                       </td>
@@ -347,7 +365,11 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                 ))
               ) : displayedItems.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length + 2} className="text-center py-8">
+                  {/* <td colSpan={columns.length + 2} className="text-center py-8"> */}
+                  <td
+                    colSpan={visibleCols.length + (showActions ? 1 : 0) + (dropdown ? 1 : 0)}
+                    className="text-center py-8"
+                  >
                     <p className="font-semibold">{emptyState?.title ?? "No Data"}</p>
                     <p>{emptyState?.message ?? "Try adjusting filters or search."}</p>
                   </td>
@@ -362,7 +384,14 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                         onClick={() => openItem?.(item)}
                         style={{ cursor: openItem ? "pointer" : undefined }}
                       >
-                        {columns.map((col) => (
+                        {/* {columns.map((col) => (
+                          <td key={col.id} className="px-4 py-3 align-middle border-b">
+                            {col.render
+                              ? col.render(item)
+                              : getNestedValue(item, col.id) ?? <span className="text-gray-400">-</span>}
+                          </td>
+                        ))} */}
+                        {visibleCols.map((col) => (
                           <td key={col.id} className="px-4 py-3 align-middle border-b">
                             {col.render
                               ? col.render(item)
@@ -408,7 +437,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                       </tr>
                       {dropdown && isExpanded && (
                         <tr className="bg-gray-100">
-                          <td colSpan={columns.length + (showActions ? 1 : 0)} className="p-4">
+                          <td colSpan={visibleCols.length + (showActions ? 1 : 0)} className="p-4">
                             {dropdown(item)}
                           </td>
                         </tr>
