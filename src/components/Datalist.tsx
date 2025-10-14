@@ -26,6 +26,7 @@ type Column = {
   style?: Record<string, any>;
   render?: (item: Record<string, any>) => React.ReactNode;
   primary?: boolean;
+  visible?: boolean;
 };
 
 type ExtraAction = {
@@ -82,6 +83,8 @@ type DataListProps = {
 
   emptyState?: { title?: string; message?: string };
   hiddencols?: HiddenCol[];
+
+  error?: string;
 };
 
 const getNestedValue = (obj: any, path: string) => path.split(".").reduce((acc, part) => acc?.[part], obj);
@@ -109,6 +112,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
       addAction,
       addToolbar,
       toolbarActions,
+      error: externalError,
     },
     ref
   ) => {
@@ -118,9 +122,11 @@ const DataList = forwardRef<DataListRef, DataListProps>(
     const [start, setStart] = useState(0);
     const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [internalError, setInternalError] = useState<string | null>(null);
 
     // ✅ Decide columns & fetcher based on priority
     const columns = listHandler ? listHandler.getColumns() : cols ?? [];
+    const visibleCols = cols?.filter((c: Column) => c.visible !== false) ?? [];
     const fetcher = listHandler ? listHandler.getList : handler;
 
     const defaultActions: ExtraAction[] = [
@@ -143,7 +149,10 @@ const DataList = forwardRef<DataListRef, DataListProps>(
 
     const doSearch = async (params: Record<string, any>) => {
       if (!fetcher) return;
+
       setLoading(true);
+      setInternalError(null);
+
       try {
         let pkcol: Column | null = null;
 
@@ -154,9 +163,11 @@ const DataList = forwardRef<DataListRef, DataListProps>(
         });
 
         if (pkcol == null) {
-          throw new Error("Specify a primary column");
+          setInternalError("Specify a primary column");
+          // throw new Error("Specify a primary column");
         }
 
+        // Projections
         const projection: Record<string, any> = {};
 
         cols!.forEach((c: Column) => {
@@ -192,6 +203,9 @@ const DataList = forwardRef<DataListRef, DataListProps>(
         }
 
         setItems(resolveItems ?? []);
+      } catch (err: any) {
+        console.error("DataList Error:", err);
+        setInternalError(err?.message ?? "An unexpected error occurred.");
       } finally {
         setLoading(false);
       }
@@ -236,9 +250,16 @@ const DataList = forwardRef<DataListRef, DataListProps>(
 
     const displayedItems = items.slice(0, limit);
     const hasNext = items.length > limit;
+    const finalError = externalError || internalError;
 
     return (
       <div className="flex flex-col font-sans font-sm rounded-md relative">
+        {finalError && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-2 flex items-center justify-between">
+            <span className="ml-2 text-sm">{finalError}</span>
+          </div>
+        )}
+
         {/* Toolbar */}
         <div className={`${hideToolbar ? "hidden" : "flex"} justify-between items-center gap-4 p-2.5`}>
           <div>{addToolbar}</div>
@@ -295,7 +316,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
         {/* Table */}
         <div className="flex-1 overflow-y-auto relative">
           <table className="w-full border-collapse table-auto">
-            <thead className="sticky top-0 z-10 bg-white shadow-[0_1px_0_rgb(235,241,245)]">
+            {/* <thead className="sticky top-0 z-10 bg-white shadow-[0_1px_0_rgb(235,241,245)]">
               <tr>
                 {columns.map((col) => (
                   <th
@@ -309,8 +330,25 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                 {showActions && <th className="px-4 py-3 text-center w-1"></th>}
                 {dropdown && <th className="px-4 py-3 w-1" />}
               </tr>
+            </thead> */}
+            <thead className="sticky top-0 z-10 bg-white shadow-[0_1px_0_rgb(235,241,245)]">
+              <tr>
+                {visibleCols.map((col) => (
+                  <th
+                    key={col.id}
+                    style={{ width: Number.isFinite(col.width) ? col.width : "auto" }}
+                    className="px-4 py-3 text-left font-bold text-sm align-middle text-gray-400"
+                  >
+                    {col.title}
+                  </th>
+                ))}
+
+                {/* Action / Dropdown columns remain visible */}
+                {showActions && <th className="px-4 py-3 text-center w-1"></th>}
+                {dropdown && <th className="px-4 py-3 w-1" />}
+              </tr>
             </thead>
-            <tbody>
+            {/* <tbody>
               {loading ? (
                 Array.from({ length: limit }).map((_, idx) => (
                   <tr key={idx} className="h-12 even:bg-gray-50 odd:bg-white">
@@ -392,6 +430,106 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                           </td>
                         )}
                       </tr>
+                      {dropdown && isExpanded && (
+                        <tr className="bg-gray-100">
+                          <td colSpan={columns.length + (showActions ? 1 : 0)} className="p-4">
+                            {dropdown(item)}
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              )}
+            </tbody> */}
+            <tbody>
+              {loading ? (
+                Array.from({ length: limit }).map((_, idx) => (
+                  <tr key={idx} className="h-12 even:bg-gray-50 odd:bg-white">
+                    {visibleCols.map((c) => (
+                      <td key={c.id} className="px-4 py-3 align-middle">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      </td>
+                    ))}
+                    {showActions && (
+                      <td className="px-4 py-3 align-middle">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      </td>
+                    )}
+                    {dropdown && (
+                      <td className="px-4 py-3 align-middle">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : displayedItems.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={visibleCols.length + (showActions ? 1 : 0) + (dropdown ? 1 : 0)}
+                    className="text-center py-8"
+                  >
+                    <p className="font-semibold">{emptyState?.title ?? "No Data"}</p>
+                    <p>{emptyState?.message ?? "Try adjusting filters or search."}</p>
+                  </td>
+                </tr>
+              ) : (
+                displayedItems.map((item: any, idx: number) => {
+                  const isExpanded = expandedRowIndex === idx;
+                  return (
+                    <React.Fragment key={idx}>
+                      <tr
+                        className="h-12 even:bg-gray-50 odd:bg-white hover:bg-blue-100"
+                        onClick={() => openItem?.(item)}
+                        style={{ cursor: openItem ? "pointer" : undefined }}
+                      >
+                        {visibleCols.map((col) => (
+                          <td key={col.id} className="px-4 py-3 align-middle border-b">
+                            {col.render
+                              ? col.render(item)
+                              : getNestedValue(item, col.id) ?? <span className="text-gray-400">-</span>}
+                          </td>
+                        ))}
+
+                        {showActions && (
+                          <td className="px-4 py-3 align-middle whitespace-nowrap border-b">
+                            <div className="flex gap-1 justify-center">
+                              {allRowActions.map((action) => (
+                                <Tooltip key={action.name} content={action.name} position="top" color="dark">
+                                  <button
+                                    type="button"
+                                    className="p-1 rounded hover:bg-[#f0f0f0]"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      action.onClick?.(item);
+                                    }}
+                                  >
+                                    {React.isValidElement(action.icon)
+                                      ? React.cloneElement(action.icon, { size: 16 })
+                                      : action.icon}
+                                  </button>
+                                </Tooltip>
+                              ))}
+                            </div>
+                          </td>
+                        )}
+
+                        {dropdown && (
+                          <td className="px-4 py-3 align-middle">
+                            <button
+                              type="button"
+                              className="p-1 rounded hover:bg-gray-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedRowIndex(isExpanded ? null : idx);
+                              }}
+                            >
+                              {isExpanded ? <ChevronLeft size={16} /> : <ChevronDown size={16} />}
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+
                       {dropdown && isExpanded && (
                         <tr className="bg-gray-100">
                           <td colSpan={columns.length + (showActions ? 1 : 0)} className="p-4">
