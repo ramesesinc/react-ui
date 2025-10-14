@@ -393,7 +393,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                           </td>
                         ))} */}
                         {visibleCols.map((col) => (
-                          <td key={col.id} className="px-4 py-3 align-middle border-b">
+                          <td key={col.id} className="px-4 py-3 align-middle border-b text-sm">
                             {col.render
                               ? col.render(item)
                               : getNestedValue(item, col.id) ?? <span className="text-gray-400">-</span>}
