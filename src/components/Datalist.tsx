@@ -451,7 +451,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
         </div>
 
         {/* Footer / Pagination */}
-        <div className="flex justify-end gap-2 p-2 bg-gray-50 ">
+        <div className="flex justify-end gap-2 p-2 bg-gray-50">
           <button
             type="button"
             className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
