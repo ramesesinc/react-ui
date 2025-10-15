@@ -264,7 +264,9 @@ const DataList = forwardRef<DataListRef, DataListProps>(
             {sortedToolbarActions.map((action) => (
               <Tooltip key={action.name} content={action.name} position="top">
                 <button type="button" className="p-1 rounded hover:bg-gray-100" onClick={() => action.onClick?.({})}>
-                  {React.isValidElement(action.icon) ? React.cloneElement(action.icon, { size: 16 }) : action.icon}
+                  {React.isValidElement(action.icon)
+                    ? React.cloneElement(action.icon as React.ReactElement<any>, { size: 16 })
+                    : action.icon}
                 </button>
               </Tooltip>
             ))}
@@ -413,7 +415,7 @@ const DataList = forwardRef<DataListRef, DataListProps>(
                                     }}
                                   >
                                     {React.isValidElement(action.icon)
-                                      ? React.cloneElement(action.icon, { size: 16 })
+                                      ? React.cloneElement(action.icon as React.ReactElement<any>, { size: 16 })
                                       : action.icon}
                                   </button>
                                 </Tooltip>
