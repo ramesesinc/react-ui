@@ -56,7 +56,7 @@ const Text: React.FC<TextProps> = ({
     }
     setInputValue(input ?? '');
     binding.set(name, input, dynamic);
-    console.log(binding.getData());
+    // console.log(binding.getData());
   };
 
   const handleFocus = () => {
